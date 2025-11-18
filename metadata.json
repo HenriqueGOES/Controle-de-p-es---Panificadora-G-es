@@ -1,0 +1,5 @@
+{
+  "name": "Panificadora Góes",
+  "description": "Um site intuitivo para a Panificadora Góes registrar pedidos de pães e visualizar a demanda através de gráficos diários, semanais e mensais.",
+  "requestFramePermissions": []
+}
