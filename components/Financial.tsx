@@ -156,10 +156,10 @@ export const Financial: React.FC<FinancialProps> = ({ orders }) => {
         <div className="p-4 sm:p-6 h-80 sm:h-96">
           <h3 className="text-lg font-semibold font-serif text-brand-dark mb-4">Receita Mensal por Tipo de Pão</h3>
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={chartData} margin={{ top: 5, right: 10, left: 10, bottom: 5 }}>
+            <BarChart data={chartData} margin={{ top: 5, right: 0, left: 0, bottom: 5 }}>
               <CartesianGrid strokeDasharray="3 3" strokeOpacity={0.3} vertical={false} />
-              <XAxis dataKey="name" stroke="#1E3A8A" tick={{fontSize: 12}} interval={0} />
-              <YAxis stroke="#1E3A8A" tickFormatter={(value) => `R$${value}`} tick={{fontSize: 12}} width={60} />
+              <XAxis dataKey="name" stroke="#1E3A8A" tick={{fontSize: 11}} interval={0} />
+              <YAxis stroke="#1E3A8A" tickFormatter={(value) => `R$${value}`} tick={{fontSize: 11}} width={55} />
               <Tooltip content={<CustomTooltip />} cursor={{fill: 'transparent'}} />
               <Bar dataKey="value" radius={[4, 4, 0, 0]}>
                 {chartData.map((entry, index) => (

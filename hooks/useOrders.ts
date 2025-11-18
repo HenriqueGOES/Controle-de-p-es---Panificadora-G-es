@@ -7,8 +7,44 @@ export const useOrders = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
 
+  // Função auxiliar para extrair mensagem de erro legível
+  const getErrorMessage = (error: any): string => {
+    if (!error) return 'Erro desconhecido';
+    
+    // Log para ajudar no debug
+    console.log('Analisando erro:', error);
+
+    // Se for string, retorna direto
+    if (typeof error === 'string') return error;
+    
+    // Se for instância de Error padrão
+    if (error instanceof Error) return error.message;
+
+    // Erros específicos do Postgres/Supabase (PostgrestError)
+    // 42501: Insufficient privilege (RLS active)
+    if (error.code === '42501' || (error.message && error.message.includes('row-level security'))) {
+      return 'BLOQUEIO DE SEGURANÇA (RLS).\n\nO Supabase impediu a gravação.\nSOLUÇÃO: Vá no SQL Editor do Supabase e rode:\n\nALTER TABLE orders DISABLE ROW LEVEL SECURITY;';
+    }
+    if (error.code === '23505') {
+      return 'Este pedido já existe (Registro duplicado).';
+    }
+
+    // Tenta extrair mensagem de propriedades comuns de erro
+    const possibleMessage = error.message || error.error_description || error.details || error.hint;
+    if (possibleMessage) {
+      return String(possibleMessage);
+    }
+    
+    // Último recurso: Tenta converter o objeto inteiro para JSON
+    try {
+      return JSON.stringify(error, null, 2);
+    } catch {
+      return String(error); // Fallback final se não for serializável
+    }
+  };
+
   // Função auxiliar para buscar os pedidos do Supabase
-  const fetchOrders = async () => {
+  const fetchOrders = useCallback(async () => {
     try {
       // Não ativamos loading aqui para não piscar a tela em atualizações realtime
       const { data, error } = await supabase
@@ -30,12 +66,12 @@ export const useOrders = () => {
         }));
         setOrders(formattedOrders);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Erro ao buscar pedidos:", error);
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   // Busca inicial e Configuração do Realtime
   useEffect(() => {
@@ -58,10 +94,12 @@ export const useOrders = () => {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, []);
+  }, [fetchOrders]);
 
   const addOrder = useCallback(async (newOrderData: Omit<Order, 'id'>) => {
     try {
+      console.log("Enviando pedido para Supabase:", newOrderData);
+
       // Mapeia os campos do app para o banco de dados
       const { error } = await supabase
         .from('orders')
@@ -76,12 +114,19 @@ export const useOrders = () => {
         ]);
 
       if (error) throw error;
-      // Não precisa chamar fetchOrders() aqui, o realtime fará isso automaticamente
-    } catch (error) {
-      console.error("Erro ao adicionar pedido:", error);
-      alert("Erro ao salvar o pedido. Tente novamente.");
+      
+      // Força a atualização da lista localmente para garantir feedback imediato
+      await fetchOrders();
+      
+    } catch (error: any) {
+      const msg = getErrorMessage(error);
+      // Só loga o JSON completo se não for um erro conhecido de RLS, para limpar o console
+      if (error.code !== '42501') {
+          console.error("Erro detalhado ao adicionar:", JSON.stringify(error, null, 2));
+      }
+      alert(`Erro ao salvar: ${msg}`);
     }
-  }, []);
+  }, [fetchOrders]);
 
   const updateOrder = useCallback(async (id: string, updatedData: Partial<Order>) => {
     try {
@@ -99,11 +144,18 @@ export const useOrders = () => {
         .eq('id', id);
 
       if (error) throw error;
-    } catch (error) {
-      console.error("Erro ao atualizar pedido:", error);
-      alert("Erro ao atualizar o pedido.");
+      
+      await fetchOrders();
+      alert("Pedido atualizado com sucesso!");
+
+    } catch (error: any) {
+      const msg = getErrorMessage(error);
+      if (error.code !== '42501') {
+        console.error("Erro detalhado ao atualizar:", JSON.stringify(error, null, 2));
+      }
+      alert(`Erro ao atualizar: ${msg}`);
     }
-  }, []);
+  }, [fetchOrders]);
 
   const deleteOrder = useCallback(async (id: string) => {
     try {
@@ -113,11 +165,18 @@ export const useOrders = () => {
         .eq('id', id);
 
       if (error) throw error;
-    } catch (error) {
-      console.error("Erro ao deletar pedido:", error);
-      alert("Erro ao deletar o pedido.");
+      
+      await fetchOrders();
+      alert("Pedido excluído com sucesso!");
+
+    } catch (error: any) {
+      const msg = getErrorMessage(error);
+      if (error.code !== '42501') {
+        console.error("Erro detalhado ao deletar:", JSON.stringify(error, null, 2));
+      }
+      alert(`Erro ao deletar: ${msg}`);
     }
-  }, []);
+  }, [fetchOrders]);
 
   const importOrders = useCallback(async (importedOrders: any[]) => {
       try {
@@ -148,13 +207,15 @@ export const useOrders = () => {
 
         if (error) throw error;
 
+        await fetchOrders();
         alert(`${validOrders.length} pedidos importados com sucesso para o banco de dados!`);
 
-      } catch (error) {
-        console.error("Erro ao importar pedidos:", error);
-        alert("Erro ao importar dados para o servidor.");
+      } catch (error: any) {
+        const msg = getErrorMessage(error);
+        console.error("Erro detalhado ao importar:", JSON.stringify(error, null, 2));
+        alert(`Erro ao importar dados: ${msg}`);
       }
-  }, []);
+  }, [fetchOrders]);
 
   return { orders, addOrder, updateOrder, deleteOrder, importOrders, loading };
 };

@@ -114,10 +114,10 @@ export const Dashboard: React.FC<DashboardProps> = ({ orders }) => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
         <ChartCard title="Pães pedidos nos Últimos 7 Dias">
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={dailyData} margin={{ top: 5, right: 10, left: -20, bottom: 5 }}>
+            <BarChart data={dailyData} margin={{ top: 5, right: 0, left: 0, bottom: 5 }}>
               <CartesianGrid strokeDasharray="3 3" strokeOpacity={0.3} />
-              <XAxis dataKey="name" stroke="#1E3A8A" tick={{fontSize: 12}} />
-              <YAxis allowDecimals={false} stroke="#1E3A8A" tick={{fontSize: 12}} />
+              <XAxis dataKey="name" stroke="#1E3A8A" tick={{fontSize: 11}} interval={0} />
+              <YAxis allowDecimals={false} stroke="#1E3A8A" tick={{fontSize: 11}} width={30} />
               <Tooltip content={<CustomTooltip />} />
               <Legend wrapperStyle={{ paddingTop: '10px' }} />
               <Bar dataKey="Pães de Hambúrguer" stackId="a" fill="#3B82F6" name="Hambúrguer" />
@@ -129,10 +129,10 @@ export const Dashboard: React.FC<DashboardProps> = ({ orders }) => {
 
         <ChartCard title="Pães pedidos nas Últimas 4 Semanas">
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={weeklyData} margin={{ top: 5, right: 10, left: -20, bottom: 5 }}>
+            <BarChart data={weeklyData} margin={{ top: 5, right: 0, left: 0, bottom: 5 }}>
               <CartesianGrid strokeDasharray="3 3" strokeOpacity={0.3} />
-              <XAxis dataKey="name" stroke="#1E3A8A" tick={{fontSize: 12}} />
-              <YAxis allowDecimals={false} stroke="#1E3A8A" tick={{fontSize: 12}} />
+              <XAxis dataKey="name" stroke="#1E3A8A" tick={{fontSize: 11}} interval={0} />
+              <YAxis allowDecimals={false} stroke="#1E3A8A" tick={{fontSize: 11}} width={30} />
               <Tooltip content={<CustomTooltip />} />
               <Legend wrapperStyle={{ paddingTop: '10px' }} />
               <Bar dataKey="Pães de Hambúrguer" stackId="a" fill="#3B82F6" name="Hambúrguer" />
@@ -145,10 +145,10 @@ export const Dashboard: React.FC<DashboardProps> = ({ orders }) => {
 
       <ChartCard title="Pães pedidos nos Últimos 12 Meses">
         <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={monthlyData} margin={{ top: 5, right: 10, left: -20, bottom: 5 }}>
+          <BarChart data={monthlyData} margin={{ top: 5, right: 0, left: 0, bottom: 5 }}>
             <CartesianGrid strokeDasharray="3 3" strokeOpacity={0.3} />
-            <XAxis dataKey="name" stroke="#1E3A8A" tick={{fontSize: 12}} />
-            <YAxis allowDecimals={false} stroke="#1E3A8A" tick={{fontSize: 12}} />
+            <XAxis dataKey="name" stroke="#1E3A8A" tick={{fontSize: 11}} interval={0} />
+            <YAxis allowDecimals={false} stroke="#1E3A8A" tick={{fontSize: 11}} width={30} />
             <Tooltip content={<CustomTooltip />} />
             <Legend wrapperStyle={{ paddingTop: '10px' }} />
             <Bar dataKey="Pães de Hambúrguer" stackId="a" fill="#3B82F6" name="Hambúrguer" />
