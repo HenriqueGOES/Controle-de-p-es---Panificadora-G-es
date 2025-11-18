@@ -41,7 +41,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ orders }) => {
   const dailyData = useMemo(() => getDailyData(orders), [orders]);
   const weeklyData = useMemo(() => getWeeklyData(orders), [orders]);
   const monthlyData = useMemo(() => getMonthlyData(orders), [orders]);
-  const { importOrders } = useOrders();
+  const { importOrders, deleteOrder, updateOrder } = useOrders();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const totalOrders = orders.length;
@@ -158,7 +158,11 @@ export const Dashboard: React.FC<DashboardProps> = ({ orders }) => {
         </ResponsiveContainer>
       </ChartCard>
 
-      <OrderList orders={orders} />
+      <OrderList 
+        orders={orders} 
+        onDelete={deleteOrder}
+        onUpdate={updateOrder}
+      />
 
       <Card>
         <div className="p-4 sm:p-6">
