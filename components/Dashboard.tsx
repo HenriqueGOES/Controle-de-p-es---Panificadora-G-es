@@ -1,10 +1,12 @@
 
-import React, { useMemo } from 'react';
+import React, { useMemo, useRef } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import type { Order } from '../types';
 import { Card } from './ui/Card';
+import { Button } from './ui/Button';
 import { getDailyData, getWeeklyData, getMonthlyData } from '../utils/dateUtils';
 import { OrderList } from './OrderList';
+import { useOrders } from '../hooks/useOrders';
 
 interface DashboardProps {
   orders: Order[];
@@ -39,11 +41,57 @@ export const Dashboard: React.FC<DashboardProps> = ({ orders }) => {
   const dailyData = useMemo(() => getDailyData(orders), [orders]);
   const weeklyData = useMemo(() => getWeeklyData(orders), [orders]);
   const monthlyData = useMemo(() => getMonthlyData(orders), [orders]);
+  const { importOrders } = useOrders();
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const totalOrders = orders.length;
   const today = new Date().toISOString().split('T')[0];
   // Safety check: ensure 'o' is defined before accessing requestDate
   const todaysOrders = orders.filter(o => o && o.requestDate === today).length;
+
+  const handleExport = () => {
+    const dataStr = JSON.stringify(orders, null, 2);
+    const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+    const exportFileDefaultName = `backup_panificadora_${new Date().toISOString().split('T')[0]}.json`;
+
+    const linkElement = document.createElement('a');
+    linkElement.setAttribute('href', dataUri);
+    linkElement.setAttribute('download', exportFileDefaultName);
+    linkElement.click();
+  };
+
+  const handleImportClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const fileObj = event.target.files && event.target.files[0];
+    if (!fileObj) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const text = e.target?.result;
+        if (typeof text === 'string') {
+          const importedData = JSON.parse(text);
+          if (Array.isArray(importedData)) {
+             if (window.confirm('Isso irá substituir todos os pedidos atuais pelos do arquivo. Tem certeza?')) {
+                importOrders(importedData);
+                alert('Dados restaurados com sucesso!');
+             }
+          } else {
+            alert('O arquivo selecionado não contém uma lista válida de pedidos.');
+          }
+        }
+      } catch (error) {
+        console.error('Erro ao importar:', error);
+        alert('Erro ao ler o arquivo. Verifique se é um backup válido.');
+      }
+      // Reset input
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    };
+    reader.readAsText(fileObj);
+  };
 
   return (
     <div className="space-y-6 sm:space-y-8">
@@ -111,6 +159,30 @@ export const Dashboard: React.FC<DashboardProps> = ({ orders }) => {
       </ChartCard>
 
       <OrderList orders={orders} />
+
+      <Card>
+        <div className="p-4 sm:p-6">
+            <h3 className="text-lg font-semibold font-serif text-brand-dark mb-4">Gerenciamento de Dados</h3>
+            <p className="text-sm text-gray-600 mb-4">
+                Faça o backup dos seus pedidos para não perder informações ou para transferi-las para outro dispositivo.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4">
+                <Button onClick={handleExport} className="flex-1 bg-green-600 hover:bg-green-700">
+                    💾 Baixar Backup (JSON)
+                </Button>
+                <Button onClick={handleImportClick} className="flex-1 bg-brand-secondary text-brand-dark hover:bg-yellow-500">
+                    📂 Restaurar Backup
+                </Button>
+                <input 
+                    type="file" 
+                    ref={fileInputRef} 
+                    style={{display: 'none'}} 
+                    accept=".json" 
+                    onChange={handleFileChange}
+                />
+            </div>
+        </div>
+      </Card>
     </div>
   );
 };
