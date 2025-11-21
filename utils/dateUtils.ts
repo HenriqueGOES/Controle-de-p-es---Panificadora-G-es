@@ -3,12 +3,14 @@ import type { Order } from '../types';
 
 interface BreadData {
   "Pães de Hambúrguer": number;
+  "Pães de Hambúrguer Médio": number;
   "Pães de Bisnaga": number;
   "Baguetes": number;
 }
 
 const initialBreadData: BreadData = {
   "Pães de Hambúrguer": 0,
+  "Pães de Hambúrguer Médio": 0,
   "Pães de Bisnaga": 0,
   "Baguetes": 0,
 };
@@ -50,6 +52,7 @@ export const getDailyData = (orders: Order[]) => {
     if (dailyCounts.has(date)) {
       const currentCounts = dailyCounts.get(date)!;
       currentCounts["Pães de Hambúrguer"] += order.hamburgerBuns || 0;
+      currentCounts["Pães de Hambúrguer Médio"] += order.mediumHamburgerBuns || 0;
       currentCounts["Pães de Bisnaga"] += order.bisnagaBuns || 0;
       currentCounts["Baguetes"] += order.baguettes || 0;
     }
@@ -82,6 +85,7 @@ export const getWeeklyData = (orders: Order[]) => {
 
         const weeklyTotals = weekOrders.reduce((acc, order) => {
           acc["Pães de Hambúrguer"] += order.hamburgerBuns || 0;
+          acc["Pães de Hambúrguer Médio"] += order.mediumHamburgerBuns || 0;
           acc["Pães de Bisnaga"] += order.bisnagaBuns || 0;
           acc["Baguetes"] += order.baguettes || 0;
           return acc;
@@ -134,6 +138,7 @@ export const getMonthlyData = (orders: Order[]) => {
       if (monthlyCounts.has(key)) {
           const currentCounts = monthlyCounts.get(key)!;
           currentCounts["Pães de Hambúrguer"] += order.hamburgerBuns || 0;
+          currentCounts["Pães de Hambúrguer Médio"] += order.mediumHamburgerBuns || 0;
           currentCounts["Pães de Bisnaga"] += order.bisnagaBuns || 0;
           currentCounts["Baguetes"] += order.baguettes || 0;
       }

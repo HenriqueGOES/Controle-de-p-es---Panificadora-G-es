@@ -117,6 +117,7 @@ export const OrderList: React.FC<OrderListProps> = ({ orders, onDelete, onUpdate
       onUpdate(editingOrder.id, {
         clientName: editingOrder.clientName,
         hamburgerBuns: editingOrder.hamburgerBuns,
+        mediumHamburgerBuns: editingOrder.mediumHamburgerBuns, // Atualizar campo novo
         bisnagaBuns: editingOrder.bisnagaBuns,
         baguettes: editingOrder.baguettes,
         requestDate: editingOrder.requestDate
@@ -161,7 +162,7 @@ export const OrderList: React.FC<OrderListProps> = ({ orders, onDelete, onUpdate
             <div className="hidden md:block border rounded-lg border-brand-primary/20 bg-white overflow-hidden">
               <div className="grid grid-cols-12 gap-4 bg-brand-light border-b border-brand-primary/20 py-3 px-4 text-xs font-medium text-brand-primary uppercase tracking-wider">
                 <div 
-                  className="col-span-4 cursor-pointer flex items-center hover:text-brand-dark"
+                  className="col-span-3 cursor-pointer flex items-center hover:text-brand-dark"
                   onClick={() => requestSort('clientName')}
                 >
                   Cliente{getSortIndicator('clientName')}
@@ -173,6 +174,7 @@ export const OrderList: React.FC<OrderListProps> = ({ orders, onDelete, onUpdate
                   Data{getSortIndicator('requestDate')}
                 </div>
                 <div className="col-span-1 text-center">Hamb.</div>
+                <div className="col-span-1 text-center">Med.</div>
                 <div className="col-span-1 text-center">Bisn.</div>
                 <div className="col-span-1 text-center">Bag.</div>
                 <div className="col-span-3 text-center">Ações</div>
@@ -185,7 +187,7 @@ export const OrderList: React.FC<OrderListProps> = ({ orders, onDelete, onUpdate
                       key={order.id} 
                       className={`grid grid-cols-12 gap-4 items-center px-4 py-3 text-sm ${index % 2 === 0 ? 'bg-white' : 'bg-brand-light/30'} hover:bg-brand-light/50 transition-colors`}
                     >
-                      <div className="col-span-4 font-medium text-brand-dark truncate" title={order.clientName}>
+                      <div className="col-span-3 font-medium text-brand-dark truncate" title={order.clientName}>
                         {order.clientName}
                       </div>
                       <div className="col-span-2 text-gray-700 truncate">
@@ -193,6 +195,9 @@ export const OrderList: React.FC<OrderListProps> = ({ orders, onDelete, onUpdate
                       </div>
                       <div className="col-span-1 text-gray-700 text-center">
                         {order.hamburgerBuns}
+                      </div>
+                      <div className="col-span-1 text-gray-700 text-center">
+                        {order.mediumHamburgerBuns}
                       </div>
                       <div className="col-span-1 text-gray-700 text-center">
                         {order.bisnagaBuns}
@@ -239,17 +244,21 @@ export const OrderList: React.FC<OrderListProps> = ({ orders, onDelete, onUpdate
                             </button>
                         </div>
                         
-                        <div className="grid grid-cols-3 gap-2">
+                        <div className="grid grid-cols-4 gap-2">
                             <div className="bg-gray-50 p-2 rounded text-center">
-                                <span className="block text-xs font-bold text-brand-primary uppercase">Hamb.</span>
+                                <span className="block text-[10px] font-bold text-brand-primary uppercase">Hamb.</span>
                                 <span className="text-sm font-semibold text-brand-dark">{order.hamburgerBuns}</span>
                             </div>
                             <div className="bg-gray-50 p-2 rounded text-center">
-                                <span className="block text-xs font-bold text-brand-primary uppercase">Bisn.</span>
+                                <span className="block text-[10px] font-bold text-brand-primary uppercase">Méd.</span>
+                                <span className="text-sm font-semibold text-brand-dark">{order.mediumHamburgerBuns}</span>
+                            </div>
+                            <div className="bg-gray-50 p-2 rounded text-center">
+                                <span className="block text-[10px] font-bold text-brand-primary uppercase">Bisn.</span>
                                 <span className="text-sm font-semibold text-brand-dark">{order.bisnagaBuns}</span>
                             </div>
                             <div className="bg-gray-50 p-2 rounded text-center">
-                                <span className="block text-xs font-bold text-brand-primary uppercase">Bag.</span>
+                                <span className="block text-[10px] font-bold text-brand-primary uppercase">Bag.</span>
                                 <span className="text-sm font-semibold text-brand-dark">{order.baguettes}</span>
                             </div>
                         </div>
@@ -388,13 +397,21 @@ export const OrderList: React.FC<OrderListProps> = ({ orders, onDelete, onUpdate
                         required
                     />
                     
-                    <div className="grid grid-cols-3 gap-4">
+                    <div className="grid grid-cols-2 gap-4">
                         <Input
                         id="edit-hamburger"
                         label="Hamb."
                         type="number"
                         value={editingOrder.hamburgerBuns.toString()}
                         onChange={(e) => setEditingOrder({ ...editingOrder, hamburgerBuns: parseInt(e.target.value, 10) || 0 })}
+                        min="0"
+                        />
+                        <Input
+                        id="edit-medium-hamburger"
+                        label="Hamb. Médio"
+                        type="number"
+                        value={editingOrder.mediumHamburgerBuns.toString()}
+                        onChange={(e) => setEditingOrder({ ...editingOrder, mediumHamburgerBuns: parseInt(e.target.value, 10) || 0 })}
                         min="0"
                         />
                         <Input

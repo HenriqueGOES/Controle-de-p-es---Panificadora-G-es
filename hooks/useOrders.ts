@@ -60,6 +60,7 @@ export const useOrders = () => {
           id: item.id,
           clientName: item.client_name,
           hamburgerBuns: item.hamburger_buns,
+          mediumHamburgerBuns: item.medium_hamburger_buns || 0, // Mapeamento do novo campo
           bisnagaBuns: item.bisnaga_buns,
           baguettes: item.baguettes,
           requestDate: item.request_date,
@@ -107,6 +108,7 @@ export const useOrders = () => {
           {
             client_name: newOrderData.clientName,
             hamburger_buns: newOrderData.hamburgerBuns,
+            medium_hamburger_buns: newOrderData.mediumHamburgerBuns, // Inserindo novo campo
             bisnaga_buns: newOrderData.bisnagaBuns,
             baguettes: newOrderData.baguettes,
             request_date: newOrderData.requestDate,
@@ -134,6 +136,7 @@ export const useOrders = () => {
       const dbData: any = {};
       if (updatedData.clientName !== undefined) dbData.client_name = updatedData.clientName;
       if (updatedData.hamburgerBuns !== undefined) dbData.hamburger_buns = updatedData.hamburgerBuns;
+      if (updatedData.mediumHamburgerBuns !== undefined) dbData.medium_hamburger_buns = updatedData.mediumHamburgerBuns; // Update novo campo
       if (updatedData.bisnagaBuns !== undefined) dbData.bisnaga_buns = updatedData.bisnagaBuns;
       if (updatedData.baguettes !== undefined) dbData.baguettes = updatedData.baguettes;
       if (updatedData.requestDate !== undefined) dbData.request_date = updatedData.requestDate;
@@ -190,6 +193,7 @@ export const useOrders = () => {
           .map((order: any) => ({
             client_name: order.clientName,
             hamburger_buns: Number(order.hamburgerBuns) || 0,
+            medium_hamburger_buns: Number(order.mediumHamburgerBuns) || 0, // Importar novo campo
             bisnaga_buns: Number(order.bisnagaBuns) || 0,
             baguettes: Number(order.baguettes) || 0,
             request_date: order.requestDate,

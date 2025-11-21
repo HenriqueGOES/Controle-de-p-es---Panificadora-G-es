@@ -9,16 +9,19 @@ interface FinancialProps {
 }
 
 const PRICES = {
-  hamburger: 4.00,
-  bisnaga: 4.30,
-  baguette: 5.50
+  hamburger: 4.30,
+  mediumHamburger: 3.80, // Novo preço
+  bisnaga: 4.80,
+  baguette: 5.00
 };
 
 interface FinancialSummary {
   hamburgerQty: number;
+  mediumHamburgerQty: number;
   bisnagaQty: number;
   baguetteQty: number;
   hamburgerTotal: number;
+  mediumHamburgerTotal: number;
   bisnagaTotal: number;
   baguetteTotal: number;
   grandTotal: number;
@@ -65,6 +68,12 @@ const FinancialTable = ({ title, data }: { title: string, data: FinancialSummary
                 <td className="px-3 py-3 text-sm text-right font-semibold text-brand-primary">{formatCurrency(data.hamburgerTotal)}</td>
               </tr>
               <tr>
+                <td className="px-3 py-3 text-sm font-medium text-brand-dark">Hamb. Médio</td>
+                <td className="px-3 py-3 text-sm text-right text-gray-600">{data.mediumHamburgerQty}</td>
+                <td className="px-3 py-3 text-sm text-right text-gray-600">{formatCurrency(PRICES.mediumHamburger)}</td>
+                <td className="px-3 py-3 text-sm text-right font-semibold text-brand-primary">{formatCurrency(data.mediumHamburgerTotal)}</td>
+              </tr>
+              <tr>
                 <td className="px-3 py-3 text-sm font-medium text-brand-dark">Bisnaga</td>
                 <td className="px-3 py-3 text-sm text-right text-gray-600">{data.bisnagaQty}</td>
                 <td className="px-3 py-3 text-sm text-right text-gray-600">{formatCurrency(PRICES.bisnaga)}</td>
@@ -93,9 +102,11 @@ export const Financial: React.FC<FinancialProps> = ({ orders }) => {
   const calculateFinancials = (filteredOrders: Order[]): FinancialSummary => {
     const summary = {
       hamburgerQty: 0,
+      mediumHamburgerQty: 0,
       bisnagaQty: 0,
       baguetteQty: 0,
       hamburgerTotal: 0,
+      mediumHamburgerTotal: 0,
       bisnagaTotal: 0,
       baguetteTotal: 0,
       grandTotal: 0,
@@ -104,14 +115,16 @@ export const Financial: React.FC<FinancialProps> = ({ orders }) => {
     filteredOrders.forEach(order => {
       if (!order) return; // Safety check
       summary.hamburgerQty += order.hamburgerBuns || 0;
+      summary.mediumHamburgerQty += order.mediumHamburgerBuns || 0;
       summary.bisnagaQty += order.bisnagaBuns || 0;
       summary.baguetteQty += order.baguettes || 0;
     });
 
     summary.hamburgerTotal = summary.hamburgerQty * PRICES.hamburger;
+    summary.mediumHamburgerTotal = summary.mediumHamburgerQty * PRICES.mediumHamburger;
     summary.bisnagaTotal = summary.bisnagaQty * PRICES.bisnaga;
     summary.baguetteTotal = summary.baguetteQty * PRICES.baguette;
-    summary.grandTotal = summary.hamburgerTotal + summary.bisnagaTotal + summary.baguetteTotal;
+    summary.grandTotal = summary.hamburgerTotal + summary.mediumHamburgerTotal + summary.bisnagaTotal + summary.baguetteTotal;
 
     return summary;
   };
@@ -141,6 +154,7 @@ export const Financial: React.FC<FinancialProps> = ({ orders }) => {
 
   const chartData = [
     { name: 'Hambúrguer', value: monthlyData.hamburgerTotal, color: '#3B82F6' },
+    { name: 'Hamb. Médio', value: monthlyData.mediumHamburgerTotal, color: '#FB923C' }, // Orange
     { name: 'Bisnaga', value: monthlyData.bisnagaTotal, color: '#FBBF24' },
     { name: 'Baguete', value: monthlyData.baguetteTotal, color: '#FDE047' },
   ];
@@ -158,8 +172,8 @@ export const Financial: React.FC<FinancialProps> = ({ orders }) => {
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={chartData} margin={{ top: 5, right: 0, left: 0, bottom: 5 }}>
               <CartesianGrid strokeDasharray="3 3" strokeOpacity={0.3} vertical={false} />
-              <XAxis dataKey="name" stroke="#1E3A8A" tick={{fontSize: 11}} interval={0} />
-              <YAxis stroke="#1E3A8A" tickFormatter={(value) => `R$${value}`} tick={{fontSize: 11}} width={55} />
+              <XAxis dataKey="name" stroke="#1E3A8A" tick={{fontSize: 11}} />
+              <YAxis stroke="#1E3A8A" tickFormatter={(value) => `R$${value}`} tick={{fontSize: 11}} width={60} />
               <Tooltip content={<CustomTooltip />} cursor={{fill: 'transparent'}} />
               <Bar dataKey="value" radius={[4, 4, 0, 0]}>
                 {chartData.map((entry, index) => (

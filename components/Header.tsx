@@ -9,7 +9,7 @@ interface HeaderProps {
 
 // Novo Logo Premium "GÓES" - Alta qualidade vetorial
 const GoesLogo: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
-  <svg viewBox="0 0 300 180" xmlns="http://www.w3.org/2000/svg" {...props}>
+  <svg viewBox="50 30 200 150" xmlns="http://www.w3.org/2000/svg" {...props}>
     <defs>
       {/* Gradiente para o pão parecer dourado e assado */}
       <linearGradient id="breadGradient" x1="0%" y1="0%" x2="0%" y2="100%">
@@ -126,7 +126,7 @@ export const Header: React.FC<HeaderProps> = ({ currentView, setCurrentView }) =
           {/* Logo Section */}
           <div className="flex items-center flex-shrink-0 cursor-pointer py-2" onClick={() => handleNavClick('form')}>
             {/* Logo Premium */}
-            <GoesLogo className="h-32 w-auto sm:h-40 sm:w-auto drop-shadow-md hover:scale-105 transition-transform duration-300" />
+            <GoesLogo className="h-24 w-auto sm:h-32 sm:w-auto drop-shadow-md hover:scale-105 transition-transform duration-300" />
           </div>
 
           {/* Desktop Navigation */}
